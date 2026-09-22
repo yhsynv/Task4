@@ -1,0 +1,6 @@
+.pio
+.vscode/
+build/
+agents.md
+__pycache__/
+*.pyc
