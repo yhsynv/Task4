@@ -4,6 +4,7 @@
 #include "freertos/task.h"
 
 static const char *TAG = "MAIN_APP";
+static constexpr uint32_t READ_INTERVAL_MS = 1000;
 
 extern "C" void app_main() {
     MockTempSensor sensor;
@@ -16,12 +17,12 @@ extern "C" void app_main() {
 
     while (true) {
         float temp = sensor.getTemperature();
-        if (temp > -900.0f) {
+        if (temp != MockTempSensor::INVALID_TEMP) {
             ESP_LOGI(TAG, "Okunan Sicaklik: %.2f °C", temp);
         } else {
             ESP_LOGW(TAG, "Sensor okuma basarisiz!");
         }
 
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        vTaskDelay(pdMS_TO_TICKS(READ_INTERVAL_MS));
     }
 }

@@ -22,14 +22,14 @@ esp_err_t MockTempSensor::init(int tx_pin, int rx_pin, int baud_rate) {
 esp_err_t MockTempSensor::readTemperature(float &out_temp) {
     uart_flush_input(uart_num_);
 
-    // 1. Python'a 'T' isteği gönder
-    if (uart_write_bytes(uart_num_, "T", 1) != 1) {
+    // 1. Python'a compile-time sabit komutunu gönder ('T')
+    if (uart_write_bytes(uart_num_, &CMD_REQ_TEMP, 1) != 1) {
         return ESP_FAIL;
     }
 
-    // 2. Python'dan gelen cevabı bekle (500 ms zaman aşımı)
+    // 2. Python'dan gelen cevabı bekle (TIMEOUT_MS compile-time sabitidir)
     char buffer[32];
-    int len = uart_read_bytes(uart_num_, buffer, sizeof(buffer) - 1, pdMS_TO_TICKS(500));
+    int len = uart_read_bytes(uart_num_, buffer, sizeof(buffer) - 1, pdMS_TO_TICKS(TIMEOUT_MS));
     if (len <= 0) {
         return ESP_ERR_TIMEOUT;
     }

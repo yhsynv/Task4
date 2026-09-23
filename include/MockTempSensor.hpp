@@ -5,19 +5,27 @@
 
 class MockTempSensor {
 public:
-    explicit MockTempSensor(uart_port_t uart_num = UART_NUM_1)
+    // Derleme zamanı (Compile-time) sabitleri - Sıfır çalışma zamanı/RAM maliyeti
+    static constexpr int DEFAULT_TX_PIN       = 4;
+    static constexpr int DEFAULT_RX_PIN       = 5;
+    static constexpr int DEFAULT_BAUD_RATE    = 115200;
+    static constexpr uint32_t TIMEOUT_MS      = 500;
+    static constexpr char CMD_REQ_TEMP        = 'T';
+    static constexpr float INVALID_TEMP       = -999.0f;
+
+    // constexpr constructor: Nesne oluşturma derleme zamanında çözülür
+    constexpr explicit MockTempSensor(uart_port_t uart_num = UART_NUM_1)
         : uart_num_(uart_num) {}
 
-    // Sensör ve UART donanımını başlat (varsayılan: TX 4, RX 5, 115200 baud)
-    esp_err_t init(int tx_pin = 4, int rx_pin = 5, int baud_rate = 115200);
+    esp_err_t init(int tx_pin = DEFAULT_TX_PIN, 
+                   int rx_pin = DEFAULT_RX_PIN, 
+                   int baud_rate = DEFAULT_BAUD_RATE);
 
-    // Hata kontrollü sıcaklık okuma
     esp_err_t readTemperature(float &out_temp);
 
-    // Doğrudan sıcaklık dönen sade arayüz (Hata durumunda -999.0f)
     float getTemperature() {
         float temp = 0.0f;
-        return (readTemperature(temp) == ESP_OK) ? temp : -999.0f;
+        return (readTemperature(temp) == ESP_OK) ? temp : INVALID_TEMP;
     }
 
 private:
