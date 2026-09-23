@@ -5,19 +5,16 @@
 
 class MockTempSensor {
 public:
-    // Varsayılan: UART1, TX: GPIO 4, RX: GPIO 5, 115200 Baud
-    MockTempSensor(uart_port_t uart_num = UART_NUM_1, 
-                   int tx_pin = 4, 
-                   int rx_pin = 5, 
-                   int baud_rate = 115200);
+    explicit MockTempSensor(uart_port_t uart_num = UART_NUM_1)
+        : uart_num_(uart_num) {}
 
-    // Sensörü ve UART donanımını başlatan fonksiyon
-    esp_err_t init();
+    // Sensör ve UART donanımını başlat (varsayılan: TX 4, RX 5, 115200 baud)
+    esp_err_t init(int tx_pin = 4, int rx_pin = 5, int baud_rate = 115200);
 
-    // Hata kontrollü sıcaklık okuma (Başarılıysa ESP_OK döner)
+    // Hata kontrollü sıcaklık okuma
     esp_err_t readTemperature(float &out_temp);
 
-    // Sadeleştirilmiş doğrudan sıcaklık değeri döndüren arayüz
+    // Doğrudan sıcaklık dönen sade arayüz (Hata durumunda -999.0f)
     float getTemperature() {
         float temp = 0.0f;
         return (readTemperature(temp) == ESP_OK) ? temp : -999.0f;
@@ -25,7 +22,4 @@ public:
 
 private:
     uart_port_t uart_num_;
-    int tx_pin_;
-    int rx_pin_;
-    int baud_rate_;
 };
